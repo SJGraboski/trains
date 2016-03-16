@@ -16,10 +16,6 @@ var milliRemaining = (60 - time.getSeconds()) * 1000;
 /* 2. Functions
  * ============ */
 var interface = {
-	
-	// a. properties
-
-	// b. methods
 
 	// trainSetter: send form data to Firebase
 	trainSetter : function(){
@@ -41,7 +37,6 @@ var interface = {
 
 	// trainGetter: retrieve form data from Firebase
 	trainGetter : function(snapshot) {
-		console.log(snapshot);
 		
 		// catch data from Firebase
 		var name = snapshot.val().name;
@@ -83,7 +78,7 @@ var interface = {
 		var duration = moment.duration(m_first.diff(m_current));
 		var durationString = Math.ceil(duration.asMinutes());
 
-		// append to table
+		// append it all to the table
 		$('#train-table').find('tbody')
 			.append($('<tr>')
 				.append( $('<td>')
@@ -108,7 +103,9 @@ var interface = {
 		;
 	},
 
+	// This checks the minutes, to be called every minute
 	trainMinute : function() {
+		
 		// catch current time
 		var m_current = moment().tz("America/New_York");
 		// make a string with only the current day
@@ -127,7 +124,7 @@ var interface = {
 									return Number($(this).text());
 							 	}).get();
 
-		// FOR LOOP
+		// FOR LOOP FOR EACH TIME ON PAGE
 		for (var i = 0; i < arrivals.length; i++) {
 
 			// if an arrival time falls after current time, major edits
@@ -153,6 +150,7 @@ var interface = {
 				var nextRow = $("td.next-row")[i]
 				$(nextRow).text(freqs[i]);
 			}
+
 			// if not, just change the next arrival change
 			else {
 
@@ -183,9 +181,11 @@ trainRef.orderByChild("dateAdded").limitToLast(3)
 	interface.trainGetter(childSnapshot);
 });
 
-// set up a timeinterval using the actual minutes of the hour
+// time out for seconds remaining in the current minute
 setTimeout(function() {
+	// run time update once
 	interface.trainMinute();
+	// then run it every minute
 	var intervalID = setInterval(function() { 
 		interface.trainMinute()
 	}, 60000)
